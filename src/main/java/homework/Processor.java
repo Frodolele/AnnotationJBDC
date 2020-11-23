@@ -13,7 +13,9 @@ public class Processor {
     public static void main(String[] args) {
         try {
             connect();
-            buildTable(Cat.class);
+//            buildTable(Cat.class);
+            addInTable(Cat.class, 1, "Max", 20);
+            addInTable(Cat.class, 2, "Vitaliy", 2);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -57,6 +59,24 @@ public class Processor {
         stringBuilder.append(");");
         statement.executeUpdate(stringBuilder.toString());
 
+    }
+
+    public static void addInTable(Class ct, int id, String name, int age) throws SQLException {
+        StringBuilder stringBuilder = new StringBuilder("INSERT INTO ");
+        stringBuilder.append(((Table) ct.getAnnotation(Table.class)).title());
+        stringBuilder.append(" (");
+        Field[] fields = ct.getDeclaredFields();
+        for (Field o: fields){
+            if (o.isAnnotationPresent(Column.class)){
+                stringBuilder.append(o.getName())
+                            .append(", ");
+            }
+        }
+        stringBuilder.setLength(stringBuilder.length() - 2);
+        stringBuilder.append(") VALUES (" + id + ", " + "\""+  name + "\"" + ", " + age);
+        stringBuilder.append(");");
+        System.out.println(stringBuilder.toString());
+        statement.executeUpdate(stringBuilder.toString());
     }
 
     public static void disconnect() {
